@@ -3,28 +3,65 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Newyear Countdown</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Countdown</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     
     <div class="cursor-glow" aria-hidden="true"></div>
+    <div id="themeOverlay" class="theme-overlay" aria-hidden="true"></div>
+
+    <!-- Event selection modal (shown on page load) -->
+    <div class="events-modal" id="eventsModal" role="dialog" aria-modal="true">
+        <div class="events-grid" id="eventsGrid">
+            <button id="closeModal" aria-label="Close selection" style="position:absolute;right:18px;top:18px;background:transparent;border:none;color:#fff;font-size:26px;cursor:pointer;">&times;</button>
+            <div class="event-card" data-id="christmas" data-datetime="2025-12-25T00:00:00">
+                <div class="event-emoji">🎄</div>
+                <div class="event-title">Christmas</div>
+                <div class="event-sub">25/12/2025 — 00:00:00</div>
+                <div class="event-accent"></div>
+            </div>
+            <div class="event-card" data-id="newyear" data-datetime="2026-01-01T00:00:00">
+                <div class="event-emoji">🎆</div>
+                <div class="event-title">New Year</div>
+                <div class="event-sub">1/1/2026 — 00:00:00</div>
+                <div class="event-accent"></div>
+            </div>
+            <div class="event-card" data-id="chinese" data-datetime="2026-02-17T00:00:00">
+                <div class="event-emoji">🧧</div>
+                <div class="event-title">Chinese New Year</div>
+                <div class="event-sub">17/2/2026 — 00:00:00</div>
+                <div class="event-accent"></div>
+            </div>
+            <div class="event-card" data-id="exam" data-datetime="2026-06-11T07:30:00">
+                <div class="event-emoji">👩‍🎓</div>
+                <div class="event-title">Kì thi THPT Quốc Gia</div>
+                <div class="event-sub">11/6/2026 — 07:30:00</div>
+                <div class="event-accent"></div>
+            </div>
+        </div>
+    </div>
+
 
     <div class="center">
-        <button class="live-btn">
+        <button class="live-btn" id="liveBtn">
             <span class="dot"></span>
-            Live Countdown Active
+            <span class="live-text">Live Countdown Active</span>
         </button>
     </div>
     <div>
         <video autoplay loop muted>
-            <source type="video/mp4" src="1222(1).mp4">
-            <source type="video/webm" src="1222(1).mp4">
+            <source type="video/mp4" src="1222.mp4">
+            <source type="video/webm" src="1222.mp4">
         </video>
     </div>
     <div class="text_main">
-        <div class="white">Newyear</div>
-        <div class="gradient">Countdown</div>
+        <div class="white">Kì thi</div>
+        <div class="gradient">THPT Quốc Gia</div>
+        <div class="gradient">2026</div>
     </div>
     <div class="center"><p>Every second brings us closer to the most magical celebration of the year</p></div>  
     <div class="countdown">
@@ -54,34 +91,234 @@
         <span class="label">SECONDS</span>
     </div>
 </div>
-<div class="center">
-        <button class="live-btn">
-            01/01/2026 00:00:00 GMT
-        </button>
-</div>
-<script>
-const targetDate = new Date("2026-01-01T00:00:00").getTime();
+    <div class="center">
+        <button class="live-btn" id="liveInfo">—</button>
+    </div>
+    <button class="change-btn" id="changeBtn" title="Change event">Change event</button>
+    <script>
+    (function(){
+        let intervalId = null;
+        let targetDate = Date.now() + 1000 * 60 * 60 * 24 * 3; // fallback
 
-function updateCountdown() {
-    const now = new Date().getTime();
-    const diff = targetDate - now;
+        const modal = document.getElementById('eventsModal');
+        const overlay = document.getElementById('themeOverlay');
+        const cards = document.querySelectorAll('.event-card');
+        const whiteEl = document.querySelector('.white');
+        const gradientEls = document.querySelectorAll('.gradient');
+        const liveInfo = document.getElementById('liveInfo');
+        const liveBtnText = document.querySelector('.live-text');
+        const closeBtn = document.getElementById('closeModal');
+        const changeBtn = document.getElementById('changeBtn');
 
-    if (diff <= 0) return;
+        let effects = { intervals: [], timeouts: [], elements: [] };
 
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-    const minutes = Math.floor((diff / (1000 * 60)) % 60);
-    const seconds = Math.floor((diff / 1000) % 60);
+        function clearEffects(){
+            // clear intervals/timeouts
+            effects.intervals.forEach(id=> clearInterval(id));
+            effects.timeouts.forEach(id=> clearTimeout(id));
+            effects.intervals = [];
+            effects.timeouts = [];
+            // remove created elements
+            effects.elements.forEach(el=> el.remove());
+            effects.elements = [];
+            // remove exam pulse
+            document.querySelectorAll('.time-box').forEach(tb=> tb.classList.remove('exam-pulse'));
+        }
 
-    document.getElementById("days").textContent = String(days).padStart(2, "0");
-    document.getElementById("hours").textContent = String(hours).padStart(2, "0");
-    document.getElementById("minutes").textContent = String(minutes).padStart(2, "0");
-    document.getElementById("seconds").textContent = String(seconds).padStart(2, "0");
-}
+        function startSnow(){
+            clearEffects();
+            const count = 40;
+            const w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+            for(let i=0;i<count;i++){
+                const s = document.createElement('div');
+                s.className = 'snowflake';
+                const size = 4 + Math.random()*8;
+                s.style.width = size+'px'; s.style.height = size+'px';
+                s.style.left = (Math.random()*100)+'%';
+                s.style.opacity = 0.6 + Math.random()*0.4;
+                const dur = 6 + Math.random()*10;
+                s.style.animationDuration = dur+'s';
+                s.style.transform = 'translateY(0)';
+                overlay.appendChild(s);
+                effects.elements.push(s);
+            }
+        }
 
-updateCountdown();
-setInterval(updateCountdown, 1000);
-</script>
+        function startFireworks(){
+            clearEffects();
+            const colors = ['#ffd166','#ff6b6b','#ffd6a5','#9bf6ff','#ff9f1c'];
+            const spawn = ()=>{
+                const cx = (20 + Math.random()*60);
+                const cy = (20 + Math.random()*40);
+                const num = 22 + Math.floor(Math.random()*12);
+                for(let i=0;i<num;i++){
+                    const p = document.createElement('div');
+                    p.className = 'fw-particle';
+                    p.style.left = cx + '%'; p.style.top = cy + '%';
+                    const c = colors[Math.floor(Math.random()*colors.length)];
+                    p.style.background = c;
+                    overlay.appendChild(p);
+                    effects.elements.push(p);
+                    // random vector
+                    const angle = Math.random()*Math.PI*2;
+                    const dist = 40 + Math.random()*80;
+                    // force layout then animate via transform+opacity
+                    requestAnimationFrame(()=>{
+                        p.style.transition = 'transform 800ms cubic-bezier(.2,.8,.2,1), opacity 800ms linear';
+                        p.style.transform = `translate(${Math.cos(angle)*dist}px, ${Math.sin(angle)*dist}px)`;
+                        p.style.opacity = '0';
+                    });
+                    // cleanup
+                    effects.timeouts.push(setTimeout(()=>{ p.remove(); }, 900));
+                }
+            };
+            spawn();
+            effects.intervals.push(setInterval(spawn, 900));
+        }
+
+        function startLanterns(){
+            clearEffects();
+            const spawn = ()=>{
+                const ln = document.createElement('div');
+                ln.className = 'lantern';
+                ln.style.left = (5 + Math.random()*90)+'%';
+                const dur = 10 + Math.random()*14;
+                ln.style.animationDuration = dur+'s';
+                overlay.appendChild(ln);
+                effects.elements.push(ln);
+                ln.addEventListener('animationend', ()=>{ ln.remove(); });
+            };
+            spawn();
+            effects.intervals.push(setInterval(spawn, 900));
+        }
+
+        function startCaps(){
+            clearEffects();
+            const spawn = ()=>{
+                const c = document.createElement('div');
+                c.className = 'cap cap-fall';
+                c.textContent = '👩‍🎓';
+                c.style.left = (5 + Math.random()*90)+'%';
+                const dur = 6 + Math.random()*6; // fall duration
+                c.style.animationDuration = dur+'s';
+                c.style.fontSize = (16 + Math.random()*14) + 'px';
+                overlay.appendChild(c);
+                effects.elements.push(c);
+                c.addEventListener('animationend', ()=>{ c.remove(); });
+            };
+            // spawn a few immediately
+            for(let i=0;i<6;i++){ setTimeout(spawn, i*180); }
+            effects.intervals.push(setInterval(spawn, 900));
+        }
+
+        function startExam(){
+            clearEffects();
+            document.querySelectorAll('.time-box').forEach(tb=> tb.classList.add('exam-pulse'));
+            // subtle periodic pulse (toggle class to strengthen effect)
+            const id = setInterval(()=>{
+                document.querySelectorAll('.time-box').forEach(tb=> tb.classList.toggle('exam-pulse'));
+            }, 1500);
+            effects.intervals.push(id);
+        }
+
+        function startEffectFor(id){
+            if(!overlay) return;
+            overlay.innerHTML = '';
+            if(id === 'christmas') startSnow();
+            else if(id === 'newyear') startFireworks();
+            else if(id === 'chinese') startFireworks();
+            else if(id === 'exam') { startCaps(); startExam(); }
+        }
+
+        function applySelection(id, dt){
+            document.body.dataset.theme = id;
+            // update headline and subhead — show full title in main heading
+            const title = document.querySelector('.event-card[data-id="'+id+'"] .event-title').textContent;
+            whiteEl.textContent = title || '';
+            // put year into the last .gradient element and clear others
+            gradientEls.forEach((el, idx)=>{
+                if(idx === gradientEls.length - 1) el.textContent = new Date(dt).getFullYear();
+                else el.textContent = '';
+            });
+            // update live info
+            liveInfo.textContent = dt.replace('T',' ');
+            if(liveBtnText) liveBtnText.textContent = 'Live — '+title;
+            // mark selected card
+            cards.forEach(c=> c.classList.toggle('selected', c.dataset.id === id));
+            // persist
+            try{ localStorage.setItem('selectedEvent', JSON.stringify({id, dt})); }catch(e){}
+            targetDate = new Date(dt).getTime();
+            startCountdown();
+            // start visual effect for theme
+            clearEffects();
+            startEffectFor(id);
+            // set themed video: newyear and chinese use 1222(1).mp4; others use id.mp4
+            const videoEl = document.querySelector('video');
+            if(videoEl){
+                const mp4 = videoEl.querySelector('source[type="video/mp4"]');
+                const webm = videoEl.querySelector('source[type="video/webm"]');
+                let newMp4 = id + '.mp4';
+                let newWebm = id + '.webm';
+                if(id === 'newyear' || id === 'chinese'){
+                    newMp4 = '1222(1).mp4';
+                    newWebm = '1222(1).webm';
+                }
+                mp4.src = newMp4;
+                webm.src = newWebm;
+                videoEl.load();
+                // show video when loadedmetadata; hide on error
+                videoEl.style.display = 'none';
+                const onLoaded = function(){ videoEl.style.display = ''; cleanup(); };
+                const onError = function(){ videoEl.style.display = 'none'; cleanup(); };
+                function cleanup(){ videoEl.removeEventListener('loadedmetadata', onLoaded); videoEl.removeEventListener('error', onError); }
+                videoEl.addEventListener('loadedmetadata', onLoaded, {once:true});
+                videoEl.addEventListener('error', onError, {once:true});
+            }
+        }
+
+        function startCountdown(){
+            if(intervalId) clearInterval(intervalId);
+            function update(){
+                const now = Date.now();
+                const diff = targetDate - now;
+                if(diff <= 0){ clearInterval(intervalId); return; }
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+                const minutes = Math.floor((diff / (1000 * 60)) % 60);
+                const seconds = Math.floor((diff / 1000) % 60);
+                document.getElementById('days').textContent = String(days).padStart(2,'0');
+                document.getElementById('hours').textContent = String(hours).padStart(2,'0');
+                document.getElementById('minutes').textContent = String(minutes).padStart(2,'0');
+                document.getElementById('seconds').textContent = String(seconds).padStart(2,'0');
+            }
+            update();
+            intervalId = setInterval(update, 1000);
+        }
+
+        // load saved selection
+        try{
+            const saved = JSON.parse(localStorage.getItem('selectedEvent'));
+            if(saved && saved.id && saved.dt){ applySelection(saved.id, saved.dt); modal.style.display='none'; }
+            else modal.style.display='flex';
+        }catch(e){ modal.style.display='grid'; }
+
+        cards.forEach(card => {
+            card.addEventListener('click', ()=>{
+                const id = card.dataset.id;
+                const dt = card.dataset.datetime;
+                applySelection(id, dt);
+                modal.style.display = 'none';
+            });
+        });
+
+        // allow close without selection (keeps fallback)
+        if(closeBtn){ closeBtn.addEventListener('click', ()=>{ modal.style.display='none'; }); }
+
+        // open modal via change button
+        if(changeBtn){ changeBtn.addEventListener('click', ()=>{ modal.style.display='flex'; modal.setAttribute('aria-hidden','false'); }); }
+
+    })();
+    </script>
 
 <script>
 // Cursor-follow red glow: update CSS variables --x and --y
@@ -121,4 +358,3 @@ setInterval(updateCountdown, 1000);
 
 </body>
 </html>
-
