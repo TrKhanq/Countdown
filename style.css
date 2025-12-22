@@ -327,3 +327,25 @@ body {
     .live-btn, .time-box { transition: none; }
     .dot { animation: none; }
 }
+
+/* On narrow screens use a grid so boxes align and center reliably */
+@media (max-width: 720px) {
+    .countdown {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+        gap: 10px;
+        justify-items: center;
+        align-items: center;
+        width: 100%;
+        max-width: 720px;
+        margin-inline: auto;
+    }
+
+    .time-box {
+        width: 100%;
+        max-width: var(--time-box-size);
+        margin: 0 auto;
+    }
+
+    .colon { display: none; }
+}
