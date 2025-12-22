@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">    
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Christmas Practice Page</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    
+    <div class="center">
+        <button class="live-btn">
+            <span class="dot"></span>
+            Live Countdown Active
+        </button>
+    </div>
+    <div>
+        <video autoplay loop muted>
+            <source type="video/mp4" src="1222.mp4">
+            <source type="video/webm" src="1222.mp4">
+        </video>
+    </div>
+    <div class="text_main">
+        <div class="white">Newyear</div>
+        <div class="gradient">Countdown</div>
+    </div>
+    <div class="center"><p>Every second brings us closer to the most magical celebration of the year</p></div>  
+    <div class="countdown">
+    <div class="time-box">
+        <span class="number" id="days">03</span>
+        <span class="label">DAYS</span>
+    </div>
+
+    <span class="colon">:</span>
+
+    <div class="time-box">
+        <span class="number" id="hours">00</span>
+        <span class="label">HOURS</span>
+    </div>
+
+    <span class="colon">:</span>
+
+    <div class="time-box">
+        <span class="number" id="minutes">36</span>
+        <span class="label">MINUTES</span>
+    </div>
+
+    <span class="colon">:</span>
+
+    <div class="time-box">
+        <span class="number" id="seconds">09</span>
+        <span class="label">SECONDS</span>
+    </div>
+</div>
+<script>
+const targetDate = new Date("2026-01-01T00:00:00").getTime();
+
+function updateCountdown() {
+    const now = new Date().getTime();
+    const diff = targetDate - now;
+
+    if (diff <= 0) return;
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((diff / (1000 * 60)) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
+
+    document.getElementById("days").textContent = String(days).padStart(2, "0");
+    document.getElementById("hours").textContent = String(hours).padStart(2, "0");
+    document.getElementById("minutes").textContent = String(minutes).padStart(2, "0");
+    document.getElementById("seconds").textContent = String(seconds).padStart(2, "0");
+}
+
+updateCountdown();
+setInterval(updateCountdown, 1000);
+</script>
+
+</body>
+</html>

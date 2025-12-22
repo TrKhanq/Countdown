@@ -1,0 +1,309 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+/* ================= NAVBAR ================= */
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 70px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 0 30px;
+    background-color: #222;
+    z-index: 1000;
+}
+
+.logo {
+    color: #fff;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 25px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 16px;
+    transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+    color: #00c3ff;
+}
+
+/* ================= BODY ================= */
+body {
+    padding-top: 20px;
+    background-color: black;
+    color: white;
+}
+
+/* ================= LIVE BUTTON ================= */
+.center {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+.live-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 14px 26px;
+    border-radius: 30px;
+    cursor: pointer;
+
+    font-size: 16px;
+    font-weight: 500;
+    color: #eaeaea;
+
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow:
+        inset 0 0 10px rgba(255, 255, 255, 0.05),
+        0 8px 30px rgba(0, 0, 0, 0.4);
+
+    transition:
+        transform 0.35s cubic-bezier(.4,1.4,.6,1),
+        box-shadow 0.35s ease,
+        background 0.35s ease,
+        border-color 0.35s ease;
+}
+
+.live-btn:hover {
+    background: radial-gradient(circle at center, #1e293b 0%, #111827 100%);
+    border-color: #38bdf8;
+    box-shadow:
+        0 0 25px rgba(56, 189, 248, 0.25),
+        0 12px 30px rgba(0, 0, 0, 0.6);
+    transform: translateY(-6px);
+}
+
+/* DOT */
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #00ff9c;
+    box-shadow: 0 0 8px rgba(0,255,156,0.8);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%   { box-shadow: 0 0 6px rgba(0,255,156,0.4); }
+    50%  { box-shadow: 0 0 14px rgba(0,255,156,1); }
+    100% { box-shadow: 0 0 6px rgba(0,255,156,0.4); }
+}
+
+/* ================= TITLE ================= */
+.text_main {
+    margin-top: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1;
+}
+
+.white {
+    font-size: 120px;
+    font-weight: 700;
+    letter-spacing: -1px;
+}
+
+.gradient {
+    font-size: 140px;
+    font-weight: 800;
+    letter-spacing: -2px;
+
+    background: linear-gradient(
+        90deg,
+        #ff4d4d,
+        #ff9f1a,
+        #ffe600,
+        #8aff4d,
+        #2ee6a6
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* ================= COUNTDOWN ================= */
+.countdown {
+    margin-top: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+}
+
+/* TIME BOX */
+.time-box {
+    width: 150px;
+    height: 150px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+
+    cursor: pointer;
+
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+
+    border-radius: 28px;
+    border: 1px solid rgba(255,255,255,0.15);
+
+    box-shadow:
+        inset 0 0 20px rgba(255,255,255,0.05),
+        0 20px 40px rgba(0,0,0,0.5);
+
+    transition:
+        transform 0.35s cubic-bezier(.4,1.4,.6,1),
+        box-shadow 0.35s ease,
+        background 0.35s ease,
+        border-color 0.35s ease;
+}
+
+.time-box:hover {
+    transform: translateY(-5px);
+    background: radial-gradient(circle at center, #1e293b 0%, #111827 100%);
+    border-color: #e46060;
+    box-shadow:
+        0 0 25px rgba(205, 56, 56, 0.25),
+        0 12px 30px rgba(223, 73, 73, 0.6);
+}
+
+/* NUMBER & LABEL */
+.number {
+    font-size: 64px;
+    font-weight: 800;
+    color: rgba(255,255,255,0.95);
+    pointer-events: none;
+}
+
+.label {
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.5);
+    pointer-events: none;
+}
+
+.colon {
+    font-size: 48px;
+    color: rgba(255,255,255,0.4);
+    pointer-events: none;
+}
+video {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+
+    z-index: -1000;
+    pointer-events: none; 
+}
+
+/* ================= RESPONSIVE ADJUSTMENTS ================= */
+:root {
+    --time-box-size: clamp(80px, 18vw, 150px);
+}
+
+/* Ensure main content leaves space for fixed navbar on all screens */
+body {
+    padding-top: 90px;
+}
+
+.text_main {
+    margin-top: 40px;
+    padding: 0 16px;
+}
+
+.white {
+    font-size: clamp(36px, 10vw, 120px);
+}
+
+.gradient {
+    font-size: clamp(48px, 12vw, 140px);
+}
+
+.countdown {
+    margin-top: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(8px, 2vw, 18px);
+    flex-wrap: wrap;
+    padding: 0 12px;
+}
+
+.time-box {
+    width: var(--time-box-size);
+    aspect-ratio: 1 / 1;
+    height: auto;
+    border-radius: clamp(12px, 3vw, 28px);
+}
+
+.number {
+    font-size: clamp(20px, 6vw, 64px);
+}
+
+.label {
+    font-size: clamp(10px, 2.2vw, 12px);
+}
+
+.colon {
+    font-size: clamp(20px, 5vw, 48px);
+}
+
+.nav-links {
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.navbar {
+    padding: 0 16px;
+}
+
+.live-btn {
+    padding: 10px 16px;
+    font-size: 14px;
+}
+
+@media (max-width: 900px) {
+    .gradient { font-size: clamp(40px, 14vw, 120px); }
+    .white { font-size: clamp(30px, 12vw, 90px); }
+}
+
+@media (max-width: 600px) {
+    .nav-links { display: none; }
+    .logo { font-size: 18px; }
+    .text_main { margin-top: 24px; }
+    .countdown { margin-top: 24px; }
+    .time-box { border-radius: 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .live-btn, .time-box { transition: none; }
+    .dot { animation: none; }
+}
