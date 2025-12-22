@@ -328,24 +328,26 @@ body {
     .dot { animation: none; }
 }
 
-/* On narrow screens use a grid so boxes align and center reliably */
+/* On narrow screens force four boxes on a single row */
 @media (max-width: 720px) {
     .countdown {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-        gap: 10px;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
         justify-items: center;
         align-items: center;
-        width: 100%;
-        max-width: 720px;
-        margin-inline: auto;
+        width: calc(100% - 24px);
+        margin: 0 auto 12px;
     }
 
     .time-box {
         width: 100%;
-        max-width: var(--time-box-size);
-        margin: 0 auto;
+        max-width: none;
+        padding: 8px;
     }
+
+    .number { font-size: clamp(14px, 6vw, 48px); }
+    .label { font-size: clamp(8px, 1.8vw, 10px); }
 
     .colon { display: none; }
 }
