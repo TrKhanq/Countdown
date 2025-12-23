@@ -154,6 +154,7 @@ body {
         #2ee6a6
     );
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -337,6 +338,9 @@ body[data-theme="exam"] {
 
 @media (max-width: 720px) {
     .events-grid { grid-template-columns: 1fr; }
+    .countdown { grid-template-columns: repeat(4, 1fr); }
+    .time-box { width: 100%; min-width: 56px; }
+    .event-title { font-size: 16px; }
 }
 
 /* Mobile: show modal as bottom sheet */
@@ -461,7 +465,7 @@ body {
     opacity: 0.8;
     padding-left: 30px;
     padding-right: 30px;
-    font-\weight: 700;
+    font-weight: 700;
 }
 
 .center p {
@@ -520,18 +524,24 @@ body {
 }
 
 @media (max-width: 900px) {
-    .gradient { font-size: clamp(36px, 14vw, 120px); }
-    .white { font-size: clamp(26px, 12vw, 90px); }
+    .gradient { font-size: clamp(32px, 13vw, 90px); }
+    .white { font-size: clamp(21px, 11vw, 74px); }
 }
 
 @media (max-width: 600px) {
     .nav-links { display: none; }
     .logo { font-size: 18px; }
-    .text_main { margin-top: 18px; }
-    .countdown { margin-top: 18px; gap: 10px; }
-    .time-box { border-radius: 12px; }
+    .text_main { margin-top: 12px; }
+    .white, .gradient { padding-left:6px; padding-right:6px; }
+    .countdown { margin-top: 12px; gap: 7px; }
+    .time-box { border-radius: 10px; min-width: 60px; }
+    .countdown, .center, .text_main { padding-left: 4px; padding-right: 4px; }
+    .event-title { font-size: 15px; }
+    .event-sub { font-size: 11px; }
+    .event-card { min-width: 110px; }
     .colon { display: none; }
     video { display: none; }
+    form#addEventForm input, form#addEventForm button { font-size:12px; padding: 6px 7px; min-width: 56px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
