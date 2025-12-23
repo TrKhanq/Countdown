@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Countdown</title>
+  <title>Newyear Countdown</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -16,7 +16,16 @@
 
     <!-- Event selection modal (shown on page load) -->
     <div class="events-modal" id="eventsModal" role="dialog" aria-modal="true">
+        <button id="showCustomEventsBtn" style="position:absolute;left:18px;top:18px;background:transparent;border:none;color:#fff;font-size:17px;cursor:pointer;font-weight:600;z-index:10;">📋 Danh sách đã thêm</button>
         <div class="events-grid" id="eventsGrid">
+            <!-- Thêm sự kiện mới (tùy chọn) -->
+            <form id="addEventForm" style="width:100%;margin-bottom:18px;grid-column:span 2;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center;background:rgba(255,255,255,0.015);padding:10px 8px;border-radius:10px;">
+                <input type="text" id="newEventName" placeholder="Tên sự kiện" required style="flex:1 1 140px;min-width:90px;max-width:200px;padding:7px 9px;border-radius:4px;border:none;outline:none;font-size:14px;">
+                <input type="date" id="newEventDate" required style="flex:1 1 110px;min-width:90px;max-width:160px;padding:7px 9px;border-radius:4px;border:none;outline:none;font-size:14px;">
+                <input type="time" id="newEventTime" required style="flex:1 1 85px;min-width:66px;max-width:120px;padding:7px 9px;border-radius:4px;border:none;outline:none;font-size:14px;">
+                <button type="submit" style="padding:7px 16px;background:var(--accent,#00c3ff);color:#fff;border:none;border-radius:8px;font-weight:600;font-size:14px;cursor:pointer;">+ Thêm</button>
+            </form>
+
             <button id="closeModal" aria-label="Close selection" style="position:absolute;right:18px;top:18px;background:transparent;border:none;color:#fff;font-size:26px;cursor:pointer;">&times;</button>
             <div class="event-card" data-id="christmas" data-datetime="2025-12-25T00:00:00">
                 <div class="event-emoji">🎄</div>
@@ -96,6 +105,57 @@
     </div>
     <button class="change-btn" id="changeBtn" title="Change event">Change event</button>
     <script>
+    // ======= THÊM SỰ KIỆN MỚI =======
+    function setupAddEventForm() {
+      const addEventForm = document.getElementById('addEventForm');
+      if(!addEventForm) return;
+      addEventForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const name = document.getElementById('newEventName').value.trim();
+        const date = document.getElementById('newEventDate').value;
+        const time = document.getElementById('newEventTime').value || '00:00';
+        if(!name || !date) return;
+        const eventsGrid = document.getElementById('eventsGrid');
+        const dtString = date + 'T' + (time.length === 5 ? (time+':00') : time);
+        // Tạo id riêng cho custom event, kèm tên và thời điểm
+        const id = 'custom' + Math.random().toString().slice(2,8);
+        // Thêm card mới
+        const card = document.createElement('div');
+        card.className = 'event-card';
+        card.dataset.id = id;
+        card.dataset.datetime = dtString;
+        card.innerHTML = `<div class="event-emoji">📅</div>
+          <div class="event-title">${name}</div>
+          <div class="event-sub">${date.split('-').reverse().join('/')} — ${time+':00'}</div>
+          <div class="event-accent"></div>`;
+        eventsGrid.appendChild(card);
+        // Lưu vào mảng customEvents trong localStorage
+        let customEvents = [];
+        try { customEvents = JSON.parse(localStorage.getItem('customEvents')) || []; }catch(e){}
+        customEvents.push({id, name, datetime: dtString});
+        try { localStorage.setItem('customEvents', JSON.stringify(customEvents)); }catch(e){}
+        // Tự động chọn sự kiện luôn
+        card.click();
+        // Reset form
+        addEventForm.reset();
+      });
+      // Khi load lại, show các custom event cũ
+      try {
+        let customs = JSON.parse(localStorage.getItem('customEvents'))||[];
+        customs.forEach(ev=>{
+          const card = document.createElement('div');
+          card.className = 'event-card';
+          card.dataset.id = ev.id;
+          card.dataset.datetime = ev.datetime;
+          const onlyDate = ev.datetime.split('T')[0];
+          const onlyTime = ev.datetime.split('T')[1];
+          card.innerHTML = `<div class="event-emoji">📅</div>\n<div class="event-title">${ev.name}</div>\n<div class="event-sub">${onlyDate.split('-').reverse().join('/')} — ${onlyTime}</div>\n<div class="event-accent"></div>`;
+          eventsGrid.appendChild(card);
+        });
+      }catch(e){}
+    }
+    // Gọi function này ngay khi script chạy
+    setupAddEventForm();
     (function(){
         let intervalId = null;
         let targetDate = Date.now() + 1000 * 60 * 60 * 24 * 3; // fallback
